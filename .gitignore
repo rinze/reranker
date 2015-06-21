@@ -1,1 +1,4 @@
 deploy.sh
+db/*
+*.pyc
+config.py
