@@ -1,0 +1,15 @@
+CREATE TABLE current (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    title TEXT,
+    url TEXT,
+    score NUMERIC,
+    date TEXT
+);
+
+CREATE TABLE dead (
+    id INTEGER PRIMARY KEY,
+    url TEXT
+);
+
+CREATE INDEX url1 ON current(url);
+CREATE INDEX url2 ON dead(url);
