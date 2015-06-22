@@ -8,6 +8,9 @@ import feedparser
 import sqlite3
 import urllib2
 import json
+import time
+import datetime
+import dateutil.parse
 
 __author__ = "José María Mateos"
 __license__ = "GPL"
@@ -28,7 +31,6 @@ def get_score(url):
     # Get partial and global scores
     fb = get_fb_score(url)
     tw = get_tw_score(url)
-    scores = fb, tw
     return fb+tw
 
 def get_fb_score(url):
@@ -73,7 +75,7 @@ def fix_url(url):
     if fragment != -1:
         url = url[:fragment]
 
-    if not url.startswith('http://') and \ 
+    if not url.startswith('http://') and \
        not url.startswith('https://'):
         return 'http://' + url.lower()
     else:
@@ -97,7 +99,80 @@ def old_link(url):
     conn.close()
     return (incurrent + indead > 0)
     
-
+def parse_feed(feed, link_keyword):
+    """
+    Parses the given feed. Of all three sources used in this
+    experiment, the only thing that changes between them is the
+    keyword for the actual link, so this is passed as an argument
+    """
+    data = [(x[link_keyword], x["title"], \
+             get_score(x[link_keyword]), \
+             time.strftime("%Y-%m-%dT%H:%M:%SZ", \
+                           x["published_parsed"])) \
+             for x in feed["entries"]]
+    return(data)
+    
+def get_expired_ids():
+    """
+    Return the ids for the links on the 'current' table that 
+    have already expired.
+    """
+    
+    now = datetime.datetime.utctimetuple(datetime.datetime.now())
+    a = dateutil.parser.parse('2015-06-21T16:28:22Z')
+    
 if __name__ == "__main__":
-    print get_score("http://elpais.com/")
-    print old_link("http://www.nytimes.com")
+    # For each source, create a list of (url, title, score, date)
+    # tuples.
+    
+    # Source #1: New York Times
+    print "Scoring New York Times...", 
+    nyrss = "http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml"
+    nyfeed = feedparser.parse(nyrss)
+    nydata = parse_feed(nyfeed, "id")
+    nyscore = float(sum([x[2] for x in nydata])) / len(nydata)
+    print "OK"
+
+    # Source #2: Wired
+    print "Scoring Wired...", 
+    wrss = "http://www.wired.com/feed/"
+    wfeed = feedparser.parse(wrss)
+    wdata = parse_feed(wfeed, "link")
+    wscore = float(sum([x[2] for x in wdata])) / len(wdata)
+    print "OK"
+    
+    # Source #3: The Intercept
+    print "Scoring The Intercept...",
+    tirss = "https://firstlook.org/theintercept/feed/?rss"
+    tifeed = feedparser.parse(tirss)
+    tidata = parse_feed(tifeed, "link")
+    tiscore = float(sum([x[2] for x in tidata])) / len(tidata)
+    print "OK"
+
+    # Compute normalization factors to account for the fact that 
+    # different sites have different share / like scores.
+    print "Normalizing...",
+    scoresum = nyscore + wscore + tiscore
+    nyfactor = scoresum / nyscore
+    wfactor = scoresum / wscore
+    tifactor = scoresum / tiscore
+
+    # Normalise
+    nydata = [(x[0], x[1], x[2] * nyfactor, x[3]) for x in nydata]
+    wdata = [(x[0], x[1], x[2] * wfactor, x[3]) for x in wdata]
+    tidata = [(x[0], x[1], x[2] * tifactor, x[3]) for x in tidata]
+    print "OK"
+    
+    # We can work with everything together past this point
+    items = nydata + wdata + tidata
+
+    # Ok, time to work with the DB. First, filter out all the links
+    # we already know, so we don't insert them twice
+    print "Filtering out old links...",
+    items = filter(lambda x: not old_link(x[0]), items)
+    print "OK"
+
+    # Expired links should be moved to the "dead" table. This is a
+    # great moment for doing so.
+    expired_ids = get_expired_ids()
+    
