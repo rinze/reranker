@@ -149,9 +149,19 @@ def move_expired(expired_ids):
  
 def update_current():
     """
-    Update scores for links currently in the `current` table.
+    Update scores for links in the `current` table.
     """
-    return None
+    conn = sqlite3.connect(DBPATH)
+    c = conn.cursor()
+    query1 = c.execute("SELECT id, url FROM current")
+    for row in query1:
+        article_id = row[0]
+        article_url = row[1]
+        score = get_score(article_url)
+        c.execute("UPDATE current SET score = ? WHERE id = ?",
+                  (score, article_id))
+    conn.commit()
+    conn.close()
 
 def insert_new(items):
     """
@@ -218,20 +228,22 @@ if __name__ == "__main__":
     items = filter(lambda x: not old_link(x[0]), items)
     print "OK, %d items remaining" % len(items)
 
-    # Now score the remaining links
-    items = [(x[0], x[1], get_score(x[0]), x[2]) for x in items]
+    # Insert new links into database, if there is something new.
+    # Initial score is 0, will compute the score for all links in 
+    # `current` in the next step
+    items = [(x[0], x[1], 0, x[2]) for x in items]    
+    if len(items) > 0:
+        insert_new(items)
 
     # Expired links should be moved to the "dead" table. This is a
     # great moment for doing so.
     expired_ids = get_expired_ids()
     if len(expired_ids) > 0:
-        print "Found %d expired links, moving them...",
+        print "Found %d expired links, moving them..." % len(expired_ids),
         move_expired(expired_ids)
         print "OK"
 
     # TODO: update scores from existing links
     update_current()
     
-    # Insert new links into database, if there is something new.
-    if len(items) > 0:
-        insert_new(items)
+    
