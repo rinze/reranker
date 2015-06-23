@@ -10,7 +10,8 @@ import urllib2
 import json
 import time
 import datetime
-import dateutil.parse
+import dateutil.parser
+import calendar
 
 __author__ = "José María Mateos"
 __license__ = "GPL"
@@ -106,7 +107,6 @@ def parse_feed(feed, link_keyword):
     keyword for the actual link, so this is passed as an argument
     """
     data = [(x[link_keyword], x["title"], \
-             get_score(x[link_keyword]), \
              time.strftime("%Y-%m-%dT%H:%M:%SZ", \
                            x["published_parsed"])) \
              for x in feed["entries"]]
@@ -117,62 +117,121 @@ def get_expired_ids():
     Return the ids for the links on the 'current' table that 
     have already expired.
     """
-    
-    now = datetime.datetime.utctimetuple(datetime.datetime.now())
-    a = dateutil.parser.parse('2015-06-21T16:28:22Z')
-    
+    now = time.mktime(datetime.datetime.utctimetuple(datetime.datetime.now()))
+    conn = sqlite3.connect(DBPATH)
+    expired = set()
+    c = conn.cursor()
+    allrows = c.execute("SELECT id, url, datetime FROM current")
+    for row in allrows:
+        tmp1 = dateutil.parser.parse(row[2])
+        itemdate = calendar.timegm(tmp1.timetuple())
+        timediff = now - itemdate
+        if timediff > LINKEXPIRE:
+            expired.add(row[0])
+
+    conn.close()
+    return(expired)
+
+def move_expired(expired_ids):
+    """
+    Move expired entries to `dead`.
+    """
+    conn = sqlite3.connect(DBPATH)
+    c = conn.cursor()
+    for expired_id in expired_ids:
+        c.execute("SELECT id, url FROM current WHERE id = ?",
+                  (expired_id, ))
+        e = c.fetchone()
+        c.execute("DELETE FROM current WHERE id = ?", (expired_id, ))
+        c.execute("INSERT INTO dead (id, url) VALUES (?, ?)", e)
+    conn.commit()
+    conn.close()
+ 
+def update_current():
+    """
+    Update scores for links currently in the `current` table.
+    """
+    return None
+
+def insert_new(items):
+    """
+    Insert new items into `current`. The score has been computed beforehand,
+    but it is not normalized.
+    `items` is a list of (url, title, score, date) tuples.
+    """
+    conn = sqlite3.connect(DBPATH)
+    c = conn.cursor()
+    c.executemany("""INSERT INTO current (url, title, score, datetime) 
+                     VALUES (?, ?, ?, ?)""", items)
+    conn.commit()
+    conn.close()
+
 if __name__ == "__main__":
     # For each source, create a list of (url, title, score, date)
     # tuples.
     
     # Source #1: New York Times
-    print "Scoring New York Times...", 
+    print "Getting New York Times...", 
     nyrss = "http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml"
     nyfeed = feedparser.parse(nyrss)
     nydata = parse_feed(nyfeed, "id")
-    nyscore = float(sum([x[2] for x in nydata])) / len(nydata)
     print "OK"
 
     # Source #2: Wired
-    print "Scoring Wired...", 
+    print "Getting Wired...", 
     wrss = "http://www.wired.com/feed/"
     wfeed = feedparser.parse(wrss)
     wdata = parse_feed(wfeed, "link")
-    wscore = float(sum([x[2] for x in wdata])) / len(wdata)
     print "OK"
     
     # Source #3: The Intercept
-    print "Scoring The Intercept...",
+    print "Getting The Intercept...",
     tirss = "https://firstlook.org/theintercept/feed/?rss"
     tifeed = feedparser.parse(tirss)
     tidata = parse_feed(tifeed, "link")
-    tiscore = float(sum([x[2] for x in tidata])) / len(tidata)
     print "OK"
 
     # Compute normalization factors to account for the fact that 
-    # different sites have different share / like scores.
-    print "Normalizing...",
-    scoresum = nyscore + wscore + tiscore
-    nyfactor = scoresum / nyscore
-    wfactor = scoresum / wscore
-    tifactor = scoresum / tiscore
+    # different sites have different share / like scores. Basically,
+    # divide by the mean score per article per site. That's easy to compute
+    # and will work just fine for this.
+    # TODO: don't normalize here, do it when computing the final sorting
+    # just before generating index.html.
+    #print "Normalizing...",
+    #nyfactor = 1 / nyscore
+    #wfactor = 1 / wscore
+    #tifactor = 1 / tiscore
 
     # Normalise
-    nydata = [(x[0], x[1], x[2] * nyfactor, x[3]) for x in nydata]
-    wdata = [(x[0], x[1], x[2] * wfactor, x[3]) for x in wdata]
-    tidata = [(x[0], x[1], x[2] * tifactor, x[3]) for x in tidata]
-    print "OK"
+    #nydata = [(x[0], x[1], x[2] * nyfactor, x[3]) for x in nydata]
+    #wdata = [(x[0],  x[1], x[2] * wfactor, x[3]) for x in wdata]
+    #tidata = [(x[0], x[1], x[2] * tifactor, x[3]) for x in tidata]
+    #print "OK"
     
-    # We can work with everything together past this point
+    # We can work with all items together past this point
     items = nydata + wdata + tidata
 
     # Ok, time to work with the DB. First, filter out all the links
     # we already know, so we don't insert them twice
+    print "Have %d total items." % len(items)
     print "Filtering out old links...",
     items = filter(lambda x: not old_link(x[0]), items)
-    print "OK"
+    print "OK, %d items remaining" % len(items)
+
+    # Now score the remaining links
+    items = [(x[0], x[1], get_score(x[0]), x[2]) for x in items]
 
     # Expired links should be moved to the "dead" table. This is a
     # great moment for doing so.
     expired_ids = get_expired_ids()
+    if len(expired_ids) > 0:
+        print "Found %d expired links, moving them...",
+        move_expired(expired_ids)
+        print "OK"
+
+    # TODO: update scores from existing links
+    update_current()
     
+    # Insert new links into database, if there is something new.
+    if len(items) > 0:
+        insert_new(items)
