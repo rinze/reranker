@@ -3,7 +3,7 @@ CREATE TABLE current (
     title TEXT,
     url TEXT,
     score NUMERIC,
-    date TEXT
+    datetime TEXT
 );
 
 CREATE TABLE dead (
