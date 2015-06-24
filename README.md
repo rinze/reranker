@@ -9,7 +9,7 @@ And: can we do it in a very, very easy way?
 
 Only two scripts are needed: one to populate the database and another one to generate static HTML files.
 
-* `retriever.py`: downloads the new articles from the sources and stores them into the database. It also moves expired links and scores the one still alive.
+* `retriever.py`: downloads the new articles from the sources and stores them into the database. It also moves expired links and scores the ones still alive.
 * `html_generator.py`: 
 
 That's it.
