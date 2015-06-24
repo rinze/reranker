@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<link rel="stylesheet" type="text/css" href="style.css">
+		<meta http-equiv="Content-type" content="text/html;charset=utf-8">		
+		<title>reranker</title>
+		
+	</head>
+	
+	<body>
+	<h1>reranker</h1>
+		<div class="column">
+		<h2>What is this?</h2>
+		<p>This is an expansion over my previous <a href="https://github.com/rinze/rank-es"><em>rank-es</em></a> project: how to create a news aggregator with very little code. You can find more information on this on <a href="https://github.com/rinze/reranker">its github page</a>.</p>
+		</div>
+
+        <div class="main">
+            {% for l in links %}
+            <div class="link">
+            	<div class="link_score">
+            	{{ l.score }}<br>
+            	<div class="link_social">
+            	<a href="http://twitter.com/home?status={{ l.qtitle + '+' + l.url}}" 
+            					target="_blank">+t</a> 
+            			<a href="http://www.facebook.com/sharer.php?u={{ l.url }}" 
+            					target="_blank">+f</a>
+            	</div>
+            	</div> 
+            	<div class="link_data">
+            		
+            		<div class="link_title">
+            		<a href="{{ l.url }}">{{ l.title }}</a><br>
+						<span class="link_url">{{ l.surl }}</span>
+					</div>
+					
+            	</div>
+            </div>
+            {% endfor %}
+            
+        </div>
+        
+	</body>
+</html>
