@@ -3,7 +3,7 @@
 
 # Local imports
 from config import DBPATH, LINKEXPIRE
-# Global imports
+# Library imports
 import feedparser
 import sqlite3
 import urllib2
@@ -154,10 +154,13 @@ def update_current():
     conn = sqlite3.connect(DBPATH)
     c = conn.cursor()
     query1 = c.execute("SELECT id, url FROM current")
-    for row in query1:
+    rows = [x for x in query1] # Free the cursor or it cannot execute
+                               # the update below.
+    for row in rows:
         article_id = row[0]
         article_url = row[1]
         score = get_score(article_url)
+        print score, article_url
         c.execute("UPDATE current SET score = ? WHERE id = ?",
                   (score, article_id))
     conn.commit()
