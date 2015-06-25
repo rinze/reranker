@@ -160,7 +160,6 @@ def update_current():
         article_id = row[0]
         article_url = row[1]
         score = get_score(article_url)
-        print score, article_url
         c.execute("UPDATE current SET score = ? WHERE id = ?",
                   (score, article_id))
     conn.commit()
@@ -203,24 +202,7 @@ if __name__ == "__main__":
     tifeed = feedparser.parse(tirss)
     tidata = parse_feed(tifeed, "link")
     print "OK"
-
-    # Compute normalization factors to account for the fact that 
-    # different sites have different share / like scores. Basically,
-    # divide by the mean score per article per site. That's easy to compute
-    # and will work just fine for this.
-    # TODO: don't normalize here, do it when computing the final sorting
-    # just before generating index.html.
-    #print "Normalizing...",
-    #nyfactor = 1 / nyscore
-    #wfactor = 1 / wscore
-    #tifactor = 1 / tiscore
-
-    # Normalise
-    #nydata = [(x[0], x[1], x[2] * nyfactor, x[3]) for x in nydata]
-    #wdata = [(x[0],  x[1], x[2] * wfactor, x[3]) for x in wdata]
-    #tidata = [(x[0], x[1], x[2] * tifactor, x[3]) for x in tidata]
-    #print "OK"
-    
+   
     # We can work with all items together past this point
     items = nydata + wdata + tidata
 
@@ -246,7 +228,7 @@ if __name__ == "__main__":
         move_expired(expired_ids)
         print "OK"
 
-    # TODO: update scores from existing links
+    # Update scores from existing links
     update_current()
     
     
