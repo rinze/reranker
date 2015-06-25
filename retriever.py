@@ -2,7 +2,7 @@
 # coding=utf-8
 
 # Local imports
-from config import DBPATH, LINKEXPIRE
+from config import DBPATH, LINKEXPIRE, SOURCE_URLS
 # Library imports
 import feedparser
 import sqlite3
@@ -181,30 +181,12 @@ def insert_new(items):
 if __name__ == "__main__":
     # For each source, create a list of (url, title, score, date)
     # tuples.
-    
-    # Source #1: New York Times
-    print "Getting New York Times...", 
-    nyrss = "http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml"
-    nyfeed = feedparser.parse(nyrss)
-    nydata = parse_feed(nyfeed, "id")
-    print "OK"
-
-    # Source #2: Wired
-    print "Getting Wired...", 
-    wrss = "http://www.wired.com/feed/"
-    wfeed = feedparser.parse(wrss)
-    wdata = parse_feed(wfeed, "link")
-    print "OK"
-    
-    # Source #3: The Intercept
-    print "Getting The Intercept...",
-    tirss = "https://firstlook.org/theintercept/feed/?rss"
-    tifeed = feedparser.parse(tirss)
-    tidata = parse_feed(tifeed, "link")
-    print "OK"
    
-    # We can work with all items together past this point
-    items = nydata + wdata + tidata
+    items = []
+    for i in xrange(len(SOURCE_URLS)):
+        feed = feedparser.parse(SOURCE_URLS[i][0])
+        feeddata = parse_feed(feed, SOURCE_URLS[i][1])
+        items += feeddata
 
     # Ok, time to work with the DB. First, filter out all the links
     # we already know, so we don't insert them twice
