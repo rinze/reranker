@@ -124,7 +124,7 @@ if __name__ == "__main__":
         # We can use a string here now
         article[3] = "%.4f" % article[3]
     
-    articles.sort(key = lambda x: x[3], reverse = True)
+    articles.sort(key = lambda x: float(x[3]), reverse = True)
     articles = articles[:ARTICLES_FRONT]
         
     template_values = {}
