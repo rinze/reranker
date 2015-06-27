@@ -57,9 +57,9 @@ def get_top_level(url):
     else:
         return domain
     
-def get_median_score(articles, penalize_length = True):
+def get_mean_score(articles, penalize_length = True):
     """
-    Returns the median score per site, for normalization purposes.
+    Returns the mean score per site, for normalization purposes.
     May use a term for length penalization, increasing the median
     value by log(number_articles) per site. In effect, that causes
     that sites that publish more quantity need also more quality
@@ -73,24 +73,14 @@ def get_median_score(articles, penalize_length = True):
             sites_score[site] = [x[3]]
         else:
             sites_score[site] += [x[3]]
-            
-    print sites_score
+    
     # Compute the average
     for k in sites_score:
-        score = sites_score[k]
-        if len(score) == 1:
-            median = float(score[0])
-        elif len(score) % 2 == 0:
-            middle = len(score) / 2
-            median = (score[middle] + score[middle - 1]) / 2.0
-        else:
-            middle = len(score) / 2 + 1
-            median = float(score[middle])
-        
+        mean = sum(sites_score[k]) / float(len(sites_score[k]))
         if penalize_length:
-            sites_score[k] = median * log(len(sites_score[k]))
+            sites_score[k] = mean * log(len(sites_score[k]))
         else:
-            sites_score[k] = median
+            sites_score[k] = mean
             
     return(sites_score)
     
@@ -139,13 +129,13 @@ if __name__ == "__main__":
     # with them after aging, factoring and sorting them so we have
     # a more or less coherent rank.
     articles = get_articles()
-    medians = get_median_score(articles)
+    means = get_mean_score(articles)
     for article in articles:
         age = article[4]
         url = article[1]
         agefactor = get_age_modifier(age)
         domain = get_top_level(url)
-        article[3] = article[3] * agefactor / medians[domain]
+        article[3] = article[3] * agefactor / means[domain]
         # We can use a string here now
         article[3] = "%.4f" % article[3]
     
