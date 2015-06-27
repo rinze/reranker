@@ -136,11 +136,15 @@ if __name__ == "__main__":
         agefactor = get_age_modifier(age)
         domain = get_top_level(url)
         article[3] = article[3] * agefactor / means[domain]
-        # We can use a string here now
-        article[3] = "%.4f" % article[3]
     
-    articles.sort(key = lambda x: float(x[3]), reverse = True)
+    articles.sort(key = lambda x: x[3], reverse = True)
     articles = articles[:ARTICLES_FRONT]
+    
+    # Normalize the score for presentation
+    scores = [x[3] for x in articles]
+    max_score = max(scores)
+    for i in xrange(len(articles)):
+        articles[i][3] = "%.1f %%" % (articles[i][3] / max_score * 100)
         
     template_values = {}
     links = [{"url": x[1], "title": x[2], \
