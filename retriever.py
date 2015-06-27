@@ -91,7 +91,7 @@ def old_link(url, title):
     c = conn.cursor()
     # From active links
     q1 = c.execute("""SELECT COUNT(*) FROM current WHERE url = ? 
-                      OR title= ?""", \
+                      OR title = ?""", \
                   (url, title))
     incurrent = q1.fetchone()[0]
     # From dead links
