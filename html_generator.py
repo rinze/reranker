@@ -3,7 +3,7 @@
 
 # Local imports
 from config import DBPATH, LINKEXPIRE, LINKFRESH, OUTPUTDIR, \
-                   ARTICLES_FRONT
+                   ARTICLES_FRONT, SOURCE_URLS
 # Library imports
 from jinja2 import Environment, PackageLoader
 import os
@@ -77,14 +77,19 @@ def get_mean_score(articles):
         sites_score[k] /= float(sites_n[k])
     return(sites_score)
     
-def shorten_url(url, truncate = 50):
+def get_name(names, url):
     """
-    Shortened URL for aesthetic purposes.
+    Return the source name from the names dictionary using the url,
+    or "" if not present in the dictionary. This function is used to
+    ensure that the HTML page can be generated, even after changing
+    SOURCE_URLS in a way that old articles in the database do not match
+    any of the current source names.
     """
-    if len(url) > truncate:
-        return url[:truncate] + '...'
+    site = get_top_level(url)
+    if site in names:
+        return names[site]
     else:
-        return url
+        return ""
 
 def get_age_modifier(age):
     """
@@ -110,6 +115,9 @@ if __name__ == "__main__":
                                              'templates'))
     tindex = env.get_template('index.html')
     
+    # Create a lookup table for the titles of the sources.
+    names = dict((get_top_level(x[0]), x[2]) for x in SOURCE_URLS)
+    
     # Obtain the articles from the database and create a dictionary
     # with them after aging, factoring and sorting them so we have
     # a more or less coherent rank.
@@ -129,7 +137,7 @@ if __name__ == "__main__":
         
     template_values = {}
     links = [{"url": x[1], "title": x[2], \
-              "surl": shorten_url(x[1]), \
+              "sourcename": get_name(names, x[1]), \
               "score": x[3], "qtitle": x[2].replace(' ', '+')} \
               for x in articles]
     template_values['links'] = links

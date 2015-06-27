@@ -17,15 +17,15 @@ ARTICLES_FRONT = 20
 # OUTPUTDIR = "/home/me/whatever/reranker/output/"
 OUTPUTDIR = ""
 
-# URLs for the RSS sources to retrieve. It is a tuple of tuples with 2 elements:
-# the RSS URL for that site, and the tag for the link to the news article
-# within the XML.
+# URLs for the RSS sources to retrieve. It is a tuple of tuples with 3 elements:
+# the RSS URL for that site, the tag for the link to the news article
+# within the XML, and the name for that source.
 # You might have to play a bit with feedparser.parse() in order to 
 # find it for your particular sources. It will tipically be either 
 # "link" or "id".
-# SOURCE_URLS = (("http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml", "id"),
-#                ("https://www.sciencenews.org/feeds/headlines.rss", "link"),
-#                ("http://www.wired.com/feed/", "link"),
-#                ("https://firstlook.org/theintercept/feed/?rss", "link"))
+# SOURCE_URLS = (("http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml", "id", "The New York Times"),
+#                ("https://www.sciencenews.org/feeds/headlines.rss", "link", "Sciencenews"),
+#                ("http://www.wired.com/feed/", "link", "Wired"),
+#                ("https://firstlook.org/theintercept/feed/?rss", "link", "The Intercept"))
 SOURCE_URLS = ""
 
