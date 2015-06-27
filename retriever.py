@@ -82,7 +82,7 @@ def fix_url(url):
     else:
         return url.lower()
 
-def old_link(url):
+def old_link(url, title):
     """
     Returns True if the link is already present in the database,
     or False otherwise.
@@ -90,8 +90,9 @@ def old_link(url):
     conn = sqlite3.connect(DBPATH)
     c = conn.cursor()
     # From active links
-    q1 = c.execute("SELECT COUNT(*) FROM current WHERE url = ?", \
-                  (url,))
+    q1 = c.execute("""SELECT COUNT(*) FROM current WHERE url = ? 
+                      OR title= ?""", \
+                  (url, title))
     incurrent = q1.fetchone()[0]
     # From dead links
     q2 = c.execute("SELECT COUNT(*) FROM dead WHERE url = ?", \
@@ -192,7 +193,7 @@ if __name__ == "__main__":
     # we already know, so we don't insert them twice
     print "Have %d total items." % len(items)
     print "Filtering out old links...",
-    items = filter(lambda x: not old_link(x[0]), items)
+    items = filter(lambda x: not old_link(x[0], x[1]), items)
     print "OK, %d items remaining" % len(items)
 
     # Insert new links into database, if there is something new.
