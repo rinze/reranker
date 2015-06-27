@@ -161,7 +161,7 @@ if __name__ == "__main__":
               "sourcename": get_name(names, x[1]), \
               "score": x[3], "qtitle": x[2].replace(' ', '+'), \
               "singlepage": get_pagefile_from_title(x[2])[1:], \
-               "d_ident": DISQUS + str(x[0])} \
+               "d_ident": str(DISQUS) + str(x[0])} \
               for x in articles]
     template_values['links'] = links
     template_values['DISQUS'] = DISQUS
@@ -184,7 +184,7 @@ if __name__ == "__main__":
                                   "score": entry[3], \
                                   "qtitle": entry[2].replace(' ', '+'), \
                                   "DISQUS": DISQUS, \
-                                  "DISQUSID" : DISQUS + str(entry[0])}
+                                  "DISQUSID" : str(DISQUS) + str(entry[0])}
         rendered_page = tpage.render(single_template_values)
         f = open(OUTPUTDIR + get_pagefile_from_title(entry[2]), "w")
         f.write(rendered_page.encode("utf-8"))
