@@ -14,6 +14,7 @@ import datetime
 import calendar
 from shutil import copyfile
 from urlparse import urlparse
+from math import log
 import re
 
 __author__ = "José María Mateos"
@@ -56,25 +57,42 @@ def get_top_level(url):
     else:
         return domain
     
-def get_mean_score(articles):
+def get_median_score(articles, penalize_length = True):
     """
-    Returns the mean score per site, for normalization purposes.
+    Returns the median score per site, for normalization purposes.
+    May use a term for length penalization, increasing the median
+    value by log(number_articles) per site. In effect, that causes
+    that sites that publish more quantity need also more quality
+    to appear at the top of the ranking. True by default.
     """
     sites_score = {}
-    sites_n = {}
     for x in articles:
         url = x[1]
         site = get_top_level(url)
         if not site in sites_score:
-            sites_score[site] = 0
-            sites_n[site] = 0
+            sites_score[site] = [x[3]]
         else:
-            sites_score[site] += x[3]
-            sites_n[site] += 1
+            sites_score[site] += [x[3]]
             
+    print sites_score
     # Compute the average
     for k in sites_score:
-        sites_score[k] /= float(sites_n[k])
+        score = sites_score[k]
+        if len(score) == 1:
+            median = float(score[0])
+        elif len(score) % 2 == 0:
+            middle = len(score) / 2
+            median = (score[middle] + score[middle - 1]) / 2.0
+        else:
+            middle = len(score) / 2 + 1
+            median = float(score[middle])
+        
+        if penalize_length:
+            sites_score[k] = median * log(len(sites_score[k]))
+        else:
+            sites_score[k] = median
+            
+    print(sites_score)
     return(sites_score)
     
 def get_name(names, url):
@@ -122,13 +140,13 @@ if __name__ == "__main__":
     # with them after aging, factoring and sorting them so we have
     # a more or less coherent rank.
     articles = get_articles()
-    means = get_mean_score(articles)
+    medians = get_median_score(articles)
     for article in articles:
         age = article[4]
         url = article[1]
         agefactor = get_age_modifier(age)
         domain = get_top_level(url)
-        article[3] = article[3] * agefactor / means[domain]
+        article[3] = article[3] * agefactor / medians[domain]
         # We can use a string here now
         article[3] = "%.4f" % article[3]
     
