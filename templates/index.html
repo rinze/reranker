@@ -30,8 +30,13 @@
             	<div class="link_data">
             		
             		<div class="link_title">
+            		{% if DISQUS %}
+            		<a href="{{ l.singlepage }}"> {{ l.title }}</a> <span class="disqus-comment-count" data-disqus-identifier="{{ l.d_ident }}"></span><br>
+            		<span class="link_url">Source: {{ l.sourcename }} | <a href="{{ l.url }}">link</a></span>
+            		{% else %}
             		<a href="{{ l.url }}">{{ l.title }}</a><br>
-						<span class="link_url">Source: {{ l.sourcename }} | <a href="{{ l.url }}">link</a></span>
+            		<span class="link_url">Source: {{ l.sourcename }}</span>
+					{% endif %}	
 					</div>
 					
             	</div>
@@ -40,5 +45,20 @@
             
         </div>
         
+        {% if DISQUS %}
+        <!-- DISQUS COMMENT COUNT CODE -->
+        <script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = '{{ DISQUS }}';
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function () {
+        var s = document.createElement('script'); s.async = true;
+        s.type = 'text/javascript';
+        s.src = '//' + disqus_shortname + '.disqus.com/count.js';
+        (document.getElementsByTagName('HEAD')[0] || document.getElementsByTagName('BODY')[0]).appendChild(s);
+    }());
+</script>
+        {% endif %}
 	</body>
 </html>

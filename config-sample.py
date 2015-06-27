@@ -29,3 +29,7 @@ OUTPUTDIR = ""
 #                ("https://firstlook.org/theintercept/feed/?rss", "link", "The Intercept"))
 SOURCE_URLS = ""
 
+# Your code for the Disqus comment block.
+# DISQUS = "mysite"
+DISQUS = ""
+

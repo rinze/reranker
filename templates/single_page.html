@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<link rel="stylesheet" type="text/css" href="../style.css">
+		<meta http-equiv="Content-type" content="text/html;charset=utf-8">		
+		<title>reranker</title>
+		
+	</head>
+	
+	<body>
+	<h1><a href="../index.html" style="text-decoration:none">reranker</a></h1>
+		<div class="column">
+		<h2>What is this?</h2>
+		<p>This is an expansion over my previous <a href="https://github.com/rinze/rank-es"><em>rank-es</em></a> project: how to create a news aggregator with very little code. You can find more information on this on <a href="https://github.com/rinze/reranker">its github page</a>.</p>
+		</div>
+
+        <div class="main">
+            <div class="link">
+            	<div class="link_score">
+            	{{ score }}<br>
+            	<div class="link_social">
+            	<a href="http://twitter.com/home?status={{ qtitle + '+' + url}}" 
+            					target="_blank">+t</a> 
+            			<a href="http://www.facebook.com/sharer.php?u={{ url }}" 
+            					target="_blank">+f</a>
+            	</div>
+            	</div> 
+            	<div class="link_data">
+            		
+            		<div class="link_title">
+            		{{ title }}<br>
+						<span class="link_url">Source: {{ sourcename }} | <a href="{{ url }}">link</a></span>
+					</div>
+					
+            	</div>
+            </div>
+        
+        {% if DISQUS %}
+        <div id="disqus_thread"></div>
+<script type="text/javascript">
+    /* * * CONFIGURATION VARIABLES * * */
+    var disqus_shortname = '{{ DISQUS }}';
+    var disqus_identifier = '{{ DISQUSID }}';
+    
+    /* * * DON'T EDIT BELOW THIS LINE * * */
+    (function() {
+        var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+        dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
+        (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="https://disqus.com/?ref_noscript" rel="nofollow">comments powered by Disqus.</a></noscript>
+        
+        {% endif %}
+        </div>
+        
+	</body>
+</html>

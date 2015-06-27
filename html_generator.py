@@ -3,7 +3,7 @@
 
 # Local imports
 from config import DBPATH, LINKEXPIRE, LINKFRESH, OUTPUTDIR, \
-                   ARTICLES_FRONT, SOURCE_URLS
+                   ARTICLES_FRONT, SOURCE_URLS, DISQUS
 # Library imports
 from jinja2 import Environment, PackageLoader
 import os
@@ -107,6 +107,16 @@ def get_age_modifier(age):
     else:
         return (LINKEXPIRE - age + LINKFRESH) / float(LINKEXPIRE)
 
+def get_pagefile_from_title(title):
+    """
+    Returns an filename in the form: words-from-the-article-title 
+    in order to create pages for single articles for the commenting
+    system.
+    """
+    title = title.lower()
+    title = re.sub(r"[^a-z0-9 ]", "", title)
+    title = title.replace(" ", "-")
+    return("/pages/" + title + ".html")
 
 if __name__ == "__main__":
     # Create the output dir if it does not exist.
@@ -149,9 +159,12 @@ if __name__ == "__main__":
     template_values = {}
     links = [{"url": x[1], "title": x[2], \
               "sourcename": get_name(names, x[1]), \
-              "score": x[3], "qtitle": x[2].replace(' ', '+')} \
+              "score": x[3], "qtitle": x[2].replace(' ', '+'), \
+              "singlepage": get_pagefile_from_title(x[2])[1:], \
+               "d_ident": DISQUS + str(x[0])} \
               for x in articles]
     template_values['links'] = links
+    template_values['DISQUS'] = DISQUS
     rendered_index = tindex.render(template_values)
     # Save to output dir
     f = open(OUTPUTDIR + "/index.html", "w")
@@ -160,5 +173,21 @@ if __name__ == "__main__":
     # Copy the CSS file
     copyfile("styles/style.css", OUTPUTDIR + "/style.css")
     
-    # TODO: create individual pages
+    # Create individual pages.
+    single_template_values = {}
+    tpage = env.get_template('single_page.html')
+    for entry in articles:
+        single_template_values = entry[2]
+        single_template_values = {"url": entry[1], 
+                                  "title": entry[2], \
+                                  "sourcename": get_name(names, entry[1]), \
+                                  "score": entry[3], \
+                                  "qtitle": entry[2].replace(' ', '+'), \
+                                  "DISQUS": DISQUS, \
+                                  "DISQUSID" : DISQUS + str(entry[0])}
+        rendered_page = tpage.render(single_template_values)
+        f = open(OUTPUTDIR + get_pagefile_from_title(entry[2]), "w")
+        f.write(rendered_page.encode("utf-8"))
+        f.close()
+        
     
