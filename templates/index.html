@@ -31,7 +31,7 @@
             		
             		<div class="link_title">
             		{% if DISQUS %}
-            		<a href="{{ l.singlepage }}"> {{ l.title }}</a> <span class="disqus-comment-count" data-disqus-identifier="{{ l.d_ident }}"></span><br>
+            		<a href="{{ l.singlepage }}"> {{ l.title }}</a> <!--<span class="disqus-comment-count" data-disqus-identifier="{{ l.d_ident }}"></span>--><br>
             		<span class="link_url">Source: {{ l.sourcename }} | <a href="{{ l.url }}">link</a></span>
             		{% else %}
             		<a href="{{ l.url }}">{{ l.title }}</a><br>
