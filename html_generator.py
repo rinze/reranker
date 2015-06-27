@@ -92,22 +92,21 @@ def get_median_score(articles, penalize_length = True):
         else:
             sites_score[k] = median
             
-    print(sites_score)
     return(sites_score)
     
 def get_name(names, url):
     """
     Return the source name from the names dictionary using the url,
-    or "" if not present in the dictionary. This function is used to
-    ensure that the HTML page can be generated, even after changing
-    SOURCE_URLS in a way that old articles in the database do not match
-    any of the current source names.
+    or the top-level domain if not present in the dictionary. This
+    function is used to ensure that the HTML page can be generated,
+    even after changing SOURCE_URLS in a way that old articles in the
+    database do not match any of the current source names.
     """
     site = get_top_level(url)
     if site in names:
         return names[site]
     else:
-        return ""
+        return site
 
 def get_age_modifier(age):
     """
