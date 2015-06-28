@@ -20,8 +20,10 @@ You will need the following Python modules: feedparser, jinja2, sqlite3, urllib2
 
 1. `mkdir db`
 2. `sqlite3 db/reranker.db < schema.sqlite3`, or any other DB file you want.
-3. Copy `config-sample.py` to `config.py` and edit the relevant variables so that they reflect the actual paths in your system. Use full paths whenever possible.
-4. `cron`
+3. Copy `config-sample.py` to `config.py` and edit the relevant variables so that they reflect the actual paths in your system. Use full paths whenever possible. If you want to use the commenting system, register a new site on [Disqus](http://www.disqus.com) and set `DISQUS` to the appropriate value.
+4. Add a cron entry to your system to run first the retriever and then the generator. I have [mine](http://reranker.rinzewind.org) set at every 30 minutes.
+
+And that's basically it.
 
 ### Finding whether my sources use "link" or "id" (or any other tag)
 
