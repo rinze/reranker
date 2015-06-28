@@ -161,8 +161,7 @@ if __name__ == "__main__":
     links = [{"url": x[1], "title": x[2], \
               "sourcename": get_name(names, x[1]), \
               "score": x[3], "qtitle": x[2].replace(' ', '+'), \
-              "singlepage": get_pagefile_from_title(x[2])[1:], \
-               "d_ident": str(DISQUS) + str(x[0])} \
+              "singlepage": get_pagefile_from_title(x[2])[1:]} \
               for x in articles]
     template_values['links'] = links
     template_values['DISQUS'] = DISQUS

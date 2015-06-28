@@ -31,7 +31,7 @@
             		<div class="link_title">
             		<a href="{{ l.url }}">{{ l.title }}</a><br>
             		{% if DISQUS %}
-            		<span class="link_url">Source: {{ l.sourcename }} | <a href="{{ MAINURL }}{{ l.singlepage }}#disqus_thread" data-disqus-identifier="{{ l.d_ident }}">Be the first to comment</a></span>
+            		<span class="link_url">Source: {{ l.sourcename }} | <a href="{{ MAINURL }}{{ l.singlepage }}#disqus_thread">Be the first to comment</a></span>
             		{% else %}
             		<span class="link_url">Source: {{ l.sourcename }}</span>
 					{% endif %}	
