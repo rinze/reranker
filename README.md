@@ -27,18 +27,16 @@ You will need the following Python modules: feedparser, jinja2, sqlite3, urllib2
 
 It should not be very difficult. Let's try with [The Guardian](http://www.theguardian.com).
 
-    :::python
     import feedparser
     test = feedparser.parse("http://www.theguardian.com/international/rss")
     test['entries'][0]
 
 And then simply inspect the output. This feed, for instance, uses both:
 
-    :::
     [...]
     'guidislink': False,
     'id': u'http://www.theguardian.com/politics/2015/jun/28/theresa-may-tunisia-gunman-did-not-target-britons-andrew-marr',
-     'link': u'http://www.theguardian.com/politics/2015/jun/28/theresa-may-tunisia-gunman-did-not-target-britons-andrew-marr',
-     'links': [{'href': u'http://www.theguardian.com [...]
+    'link': u'http://www.theguardian.com/politics/2015/jun/28/theresa-may-tunisia-gunman-did-not-target-britons-andrew-marr',
+    'links': [{'href': u'http://www.theguardian.com [...]
 
 
