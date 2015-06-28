@@ -23,13 +23,13 @@ OUTPUTDIR = ""
 # You might have to play a bit with feedparser.parse() in order to 
 # find it for your particular sources. It will tipically be either 
 # "link" or "id".
-# SOURCE_URLS = (("http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml", "id", "The New York Times"),
-#                ("https://www.sciencenews.org/feeds/headlines.rss", "link", "Sciencenews"),
-#                ("http://www.wired.com/feed/", "link", "Wired"),
-#                ("https://firstlook.org/theintercept/feed/?rss", "link", "The Intercept"))
+#SOURCE_URLS = (("http://www.nytimes.com/services/xml/rss/nyt/HomePage.xml", "id", "New York Times"),
+#               ("http://phys.org/rss-feed/", "link", "Phys.org"),
+#               ("http://www.wired.com/feed/", "link", "Wired"),
+#               ("https://firstlook.org/theintercept/feed/?rss", "link", "The Intercept"))
 SOURCE_URLS = ""
 
-# Your code for the Disqus comment block.
+# Your code for the Disqus comment block. Use DISQUS = None to disable
 # DISQUS = "mysite"
-DISQUS = ""
+DISQUS = None
 
