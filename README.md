@@ -1,3 +1,5 @@
+*(More info on [this blog post](http://rinzewind.org/blog-en/2015/reranker.html))*
+
 # reranker
 Adapted [rank-es](https://github.com/rinze/rank-es), proof of concept.
 
