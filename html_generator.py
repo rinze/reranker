@@ -79,7 +79,7 @@ def get_normalization_factor(articles, penalize_length):
     for k in sites_score:
         mean = sum(sites_score[k]) / float(len(sites_score[k]))
         if penalize_length:
-            sites_score[k] = mean * log(len(sites_score[k]))
+            sites_score[k] = mean * log(len(sites_score[k]) + 1)
         else:
             sites_score[k] = mean
             
