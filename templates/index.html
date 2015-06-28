@@ -10,9 +10,8 @@
 	
 	<body>
 	<h1>reranker</h1>
-		<div class="column">
-		<h2>What is this?</h2>
-		<p>This is an expansion over my previous <a href="https://github.com/rinze/rank-es"><em>rank-es</em></a> project: how to create a news aggregator with very little code. You can find more information on this on <a href="https://github.com/rinze/reranker">its github page</a>.</p>
+		<div class="sidebar">
+		{% include "sidebar.html" %}
 		</div>
 
         <div class="main">
@@ -30,11 +29,10 @@
             	<div class="link_data">
             		
             		<div class="link_title">
-            		{% if DISQUS %}
-            		<a href="{{ l.singlepage }}"> {{ l.title }}</a> <!--<span class="disqus-comment-count" data-disqus-identifier="{{ l.d_ident }}"></span>--><br>
-            		<span class="link_url">Source: {{ l.sourcename }} | <a href="{{ l.url }}">link</a></span>
-            		{% else %}
             		<a href="{{ l.url }}">{{ l.title }}</a><br>
+            		{% if DISQUS %}
+            		<span class="link_url">Source: {{ l.sourcename }} | <a href="{{ MAINURL }}{{ l.singlepage }}#disqus_thread" data-disqus-identifier="{{ l.d_ident }}">Be the first to comment</a></span>
+            		{% else %}
             		<span class="link_url">Source: {{ l.sourcename }}</span>
 					{% endif %}	
 					</div>

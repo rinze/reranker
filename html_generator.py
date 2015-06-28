@@ -3,7 +3,8 @@
 
 # Local imports
 from config import DBPATH, LINKEXPIRE, LINKFRESH, OUTPUTDIR, \
-                   ARTICLES_FRONT, SOURCE_URLS, DISQUS
+                   ARTICLES_FRONT, SOURCE_URLS, DISQUS, PENALIZE_N, \
+                   MAINURL
 # Library imports
 from jinja2 import Environment, PackageLoader
 import os
@@ -57,7 +58,7 @@ def get_top_level(url):
     else:
         return domain
     
-def get_mean_score(articles, penalize_length = True):
+def get_normalization_factor(articles, penalize_length):
     """
     Returns the mean score per site, for normalization purposes.
     May use a term for length penalization, increasing the median
@@ -139,13 +140,13 @@ if __name__ == "__main__":
     # with them after aging, factoring and sorting them so we have
     # a more or less coherent rank.
     articles = get_articles()
-    means = get_mean_score(articles)
+    normfactors = get_normalization_factor(articles, PENALIZE_N)
     for article in articles:
         age = article[4]
         url = article[1]
         agefactor = get_age_modifier(age)
         domain = get_top_level(url)
-        article[3] = article[3] * agefactor / means[domain]
+        article[3] = article[3] * agefactor / normfactors[domain]
     
     articles.sort(key = lambda x: x[3], reverse = True)
     articles = articles[:ARTICLES_FRONT]
@@ -165,6 +166,7 @@ if __name__ == "__main__":
               for x in articles]
     template_values['links'] = links
     template_values['DISQUS'] = DISQUS
+    template_values['MAINURL'] = MAINURL
     rendered_index = tindex.render(template_values)
     # Save to output dir
     f = open(OUTPUTDIR + "/index.html", "w")

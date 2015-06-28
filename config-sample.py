@@ -1,3 +1,7 @@
+# The URL for the front page
+# MAINURL = "http://www.example.com/"
+MAINURL = ""
+
 # Full path to the DB file created with the schema.sqlite3 file.
 # DBPATH = "/home/me/whatever/reranker/db/dbfile.db"
 DBPATH = ""
@@ -32,4 +36,8 @@ SOURCE_URLS = ""
 # Your code for the Disqus comment block. Use DISQUS = None to disable
 # DISQUS = "mysite"
 DISQUS = None
+
+# Do we want to include a penalization for number of articles per site
+# in the normalization factor?
+PENALIZE_N = True
 

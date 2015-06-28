@@ -10,9 +10,8 @@
 	
 	<body>
 	<h1><a href="../index.html" style="text-decoration:none">reranker</a></h1>
-		<div class="column">
-		<h2>What is this?</h2>
-		<p>This is an expansion over my previous <a href="https://github.com/rinze/rank-es"><em>rank-es</em></a> project: how to create a news aggregator with very little code. You can find more information on this on <a href="https://github.com/rinze/reranker">its github page</a>.</p>
+		<div class="sidebar">
+		{% include "sidebar.html" %}
 		</div>
 
         <div class="main">
@@ -29,8 +28,8 @@
             	<div class="link_data">
             		
             		<div class="link_title">
-            		{{ title }}<br>
-						<span class="link_url">Source: {{ sourcename }} | <a href="{{ url }}">link</a></span>
+            		<a href="{{ url }}">{{ title }}</a><br>
+						<span class="link_url">Source: {{ sourcename }}</span>
 					</div>
 					
             	</div>
