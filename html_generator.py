@@ -77,11 +77,13 @@ def get_normalization_factor(articles, penalize_length):
     
     # Compute the average
     for k in sites_score:
-        mean = sum(sites_score[k]) / float(len(sites_score[k]))
+        factor = sum(sites_score[k]) / float(len(sites_score[k]))
+        # Also use the log of the maximum score
+        factor /= log(max(sites_score[k]) + 1)
         if penalize_length:
-            sites_score[k] = mean * log(len(sites_score[k]) + 1)
+            sites_score[k] = factor * log(len(sites_score[k]) + 1)
         else:
-            sites_score[k] = mean
+            sites_score[k] = factor
             
     return(sites_score)
     
